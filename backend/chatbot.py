@@ -176,8 +176,8 @@ TOP CAÍDAS DETECTADAS (cambios > 100k tiendas):
         """
         Responde una pregunta usando RAG:
         1. Busca datos relevantes en SQLite
-        2. Pasa contexto a Claude
-        3. Claude sintetiza respuesta natural
+        2. Construye prompt con contexto real
+        3. Groq LLM sintetiza la respuesta
         """
 
         # Obtener contexto
