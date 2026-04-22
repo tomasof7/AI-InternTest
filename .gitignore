@@ -1,0 +1,55 @@
+# Archivos secretos (NUNCA subir)
+.env
+.env.local
+.env.*.local
+
+# Dependencias
+backend/__pycache__/
+backend/venv/
+backend/.venv/
+node_modules/
+
+# Base de datos (opcional - puedes subir si quieres)
+# backend/availability.db
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Angular
+/frontend/dist/
+/frontend/.angular/
+/frontend/node_modules/
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Datos crudos
+/backend/data/raw/
