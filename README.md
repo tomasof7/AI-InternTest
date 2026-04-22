@@ -1,169 +1,174 @@
 # Rappi Store Availability Dashboard
 
-An intelligent data platform that visualizes Rappi store availability trends and answers analytical questions in natural language using a RAG-powered AI assistant.
+Plataforma de inteligencia de datos que visualiza la disponibilidad de tiendas Rappi y responde preguntas analíticas en lenguaje natural usando un asistente de IA con RAG.
 
 **Stack:** Angular 18 · FastAPI · SQLite · Groq (llama-3.1-8b) · Chart.js
 
 ---
 
-## Problem Statement
+## El problema
 
-Operations teams need to monitor store availability patterns across time to detect anomalies, demand spikes, and low-activity windows — without writing SQL queries or waiting on data analysts.
+Los equipos de operaciones necesitan monitorear patrones de disponibilidad de tiendas a lo largo del tiempo para detectar anomalías, picos de demanda y ventanas de baja actividad — sin escribir consultas SQL ni esperar a un analista de datos.
 
-This platform solves that by combining:
-- **Visual analytics** — interactive charts from 67,141 historical data points
-- **Conversational AI** — natural language queries answered with real database context (RAG), not hallucinations
+Esta plataforma lo resuelve combinando:
+- **Análisis visual** — gráficos interactivos de 67,141 puntos de datos históricos
+- **IA conversacional** — preguntas en lenguaje natural respondidas con contexto real de la base de datos (RAG), sin alucinaciones
 
 ---
 
-## Features
+## Funcionalidades
 
-| Feature | Description |
+| Funcionalidad | Descripción |
 |---|---|
-| Time series chart | Full availability series, sampled for smooth rendering |
-| Daily average chart | Bar chart aggregated by day |
-| Hourly pattern chart | 24-hour cycle average across all days |
-| Min/Max/Avg chart | Daily variance visualization |
-| RAG Chatbot | Groq LLM grounded in live SQLite queries |
-| Analytics page | Day-by-day table + hour-by-hour heatmap + auto-insights |
-| Architecture page | System diagram, RAG flow, API endpoint reference |
+| Gráfico de serie de tiempo | Serie completa de disponibilidad, muestreada para rendimiento fluido |
+| Gráfico de promedio diario | Barras agregadas por día |
+| Patrón horario | Ciclo diurno promedio de 24 horas |
+| Gráfico Min/Max/Promedio | Variación diaria de disponibilidad |
+| Chatbot RAG | Groq LLM fundamentado en consultas SQLite en tiempo real |
+| Página de Analytics | Tabla por día + mapa de calor por hora + insights automáticos |
+| Página de Arquitectura | Diagrama del sistema, flujo RAG, referencia de endpoints |
 
 ---
 
-## Architecture
+## Arquitectura
 
 ```
-Browser (Angular 18)
-  ├── /dashboard    → KPIs + 4 Chart.js charts
-  ├── /insights     → RAG chatbot (ChatGPT-style UI)
-  ├── /analytics    → Day/hour breakdown tables
-  ├── /architecture → System diagrams
-  └── /about        → Project context
+Navegador (Angular 18)
+  ├── /dashboard     → KPIs + 4 gráficos Chart.js
+  ├── /insights      → Chatbot RAG (interfaz estilo ChatGPT)
+  ├── /analytics     → Desglose por día y por hora
+  ├── /architecture  → Diagramas del sistema
+  └── /about         → Contexto del proyecto
 
         │  HTTP REST
         ▼
 
 FastAPI (Python)
-  ├── GET  /api/data   → 67,141 time-series points + KPIs
-  ├── POST /api/chat   → RAG pipeline → Groq LLM
-  └── GET  /api/health → DB health check
+  ├── GET  /api/data    → 67,141 puntos de serie temporal + KPIs
+  ├── POST /api/chat    → Pipeline RAG → Groq LLM
+  └── GET  /api/health  → Estado de la base de datos
 
         │  sqlite3
         ▼
 
 SQLite (data/availability.db)
-  └── table: availability
-        columns: id, plot_name, metric, timestamp, value, source_file
-        indexes: timestamp, metric, (metric, timestamp)
-        rows: 67,141
+  └── tabla: availability
+        columnas: id, plot_name, metric, timestamp, value, source_file
+        índices: timestamp, metric, (metric, timestamp)
+        filas: 67,141
 ```
 
-### RAG Flow (Chatbot)
+### Flujo RAG (Chatbot)
 
 ```
-User question
+Pregunta del usuario
     │
     ▼
-1. Keyword analysis     → detects "hora", "día", "pico", "mínimo"…
+1. Análisis de keywords   → detecta "hora", "día", "pico", "mínimo"…
     │
     ▼
-2. SQLite query         → GROUP BY hour/date, ORDER BY value, etc.
+2. Consulta SQLite        → GROUP BY hour/date, ORDER BY value, etc.
     │
     ▼
-3. Context building     → real data injected into system prompt
+3. Construcción del prompt → datos reales inyectados en el system prompt
     │
     ▼
-4. Groq LLM             → llama-3.1-8b-instant generates answer
+4. Groq LLM               → llama-3.1-8b-instant genera la respuesta
     │
     ▼
-Response grounded in real data — no hallucinations
+Respuesta fundamentada en datos reales — sin alucinaciones
 ```
 
 ---
 
-## Tech Stack
+## Stack tecnológico
 
-| Layer | Technology | Version | Role |
+| Capa | Tecnología | Versión | Rol |
 |---|---|---|---|
-| Frontend | Angular | 18 | SPA with routing, standalone components |
-| Frontend | TypeScript | 5.9 | Type-safe component logic |
-| Frontend | Chart.js | 4.5 | Interactive data visualization |
-| Backend | FastAPI | 0.104+ | REST API, async, auto-docs |
-| Backend | Python | 3.10+ | Data processing, RAG orchestration |
-| Backend | Groq SDK | 0.4+ | LLM integration |
-| Database | SQLite | built-in | 67K records, indexed queries |
-| Data | Pandas | 2.0+ | CSV pipeline (wide → long format) |
-| Data | Pydantic | 2.x | API model validation |
+| Frontend | Angular | 18 | SPA con routing, standalone components |
+| Frontend | TypeScript | 5.9 | Lógica de componentes con tipado estático |
+| Frontend | Chart.js | 4.5 | Visualización de datos interactiva |
+| Backend | FastAPI | 0.104+ | API REST, async, documentación automática |
+| Backend | Python | 3.10+ | Procesamiento de datos, orquestación RAG |
+| Backend | Groq SDK | 0.4+ | Integración con LLM |
+| Base de datos | SQLite | built-in | 67K registros, consultas indexadas |
+| Datos | Pandas | 2.0+ | Pipeline CSV (formato wide → long) |
+| Datos | Pydantic | 2.x | Validación de modelos de la API |
 
 ---
 
-## Project Structure
+## Estructura del proyecto
 
 ```
 AI-InternTest/
 │
 ├── backend/
-│   ├── main.py              # FastAPI app — 3 endpoints
-│   ├── chatbot.py           # RAG logic — SQLite search + Groq LLM
-│   ├── data_processor.py    # CSV parser (wide → long, timestamp normalization)
-│   ├── init_db.py           # Loads processed CSV into SQLite
-│   ├── models.py            # Pydantic request/response models
+│   ├── main.py              # App FastAPI — 3 endpoints
+│   ├── chatbot.py           # Lógica RAG — búsqueda SQLite + Groq LLM
+│   ├── data_processor.py    # Parser de CSV (wide → long, normalización de timestamps)
+│   ├── init_db.py           # Carga el CSV procesado en SQLite
+│   ├── models.py            # Modelos Pydantic para request/response
 │   └── requirements.txt
 │
 ├── data/
-│   ├── availability.db      # SQLite — 67,141 records (included for demo)
-│   └── raw/                 # Source CSVs — gitignored (201 files)
+│   ├── availability.db      # SQLite — 67,141 registros (incluido para demo)
+│   └── raw/                 # CSVs fuente — en .gitignore (201 archivos)
 │
 ├── scripts/
-│   └── process_data.py      # One-time ETL pipeline (wide CSVs → processed CSV)
+│   └── process_data.py      # Pipeline ETL de una sola vez (CSVs → CSV procesado)
 │
 ├── frontend/
 │   └── src/app/
 │       ├── pages/
-│       │   ├── dashboard/   # KPIs + 4 charts
-│       │   ├── insights/    # RAG chatbot UI
-│       │   ├── analytics/   # Day/hour breakdown
-│       │   ├── architecture/ # System diagrams
-│       │   └── about/       # Project context
+│       │   ├── dashboard/    # KPIs + 4 gráficos
+│       │   ├── insights/     # Chatbot RAG
+│       │   ├── analytics/    # Desglose por día y hora
+│       │   ├── architecture/ # Diagramas del sistema
+│       │   └── about/        # Contexto del proyecto
 │       ├── components/
-│       │   ├── layout/      # Sidebar + navbar shell
-│       │   ├── sidebar/     # Navigation
-│       │   └── navbar/      # Top bar + breadcrumb
+│       │   ├── layout/       # Shell: sidebar + navbar
+│       │   ├── sidebar/      # Navegación
+│       │   └── navbar/       # Barra superior + breadcrumb
 │       └── services/
-│           ├── data.service.ts  # GET /api/data
-│           └── chat.service.ts  # POST /api/chat
+│           ├── data.service.ts   # GET /api/data
+│           └── chat.service.ts   # POST /api/chat
 │
-├── .env.example             # Environment variable template
+├── .env.example             # Plantilla de variables de entorno
 └── README.md
 ```
 
 ---
 
-## Getting Started
+## Instalación y ejecución
 
-### Prerequisites
+### Requisitos previos
 
 - Python 3.10+
 - Node.js 18+
 - npm
 
-### 1. Clone the repository
+### 1. Clonar el repositorio
 
 ```bash
 git clone https://github.com/tomasof7/AI-InternTest.git
 cd AI-InternTest
 ```
 
-### 2. Configure environment variables
+### 2. Configurar variables de entorno
 
 ```bash
 cp .env.example .env
-# Edit .env and add your Groq API key
 ```
 
-Get a free API key at [console.groq.com/keys](https://console.groq.com/keys) — no credit card required.
+Edita `.env` y agrega tu clave de API de Groq:
 
-### 3. Start the backend
+```env
+GROQ_API_KEY=tu_clave_aqui
+```
+
+Obtén una clave **gratuita** (sin tarjeta de crédito) en [console.groq.com/keys](https://console.groq.com/keys).
+
+### 3. Iniciar el backend
 
 ```bash
 cd backend
@@ -173,7 +178,7 @@ python main.py
 # → http://localhost:8000/docs  (Swagger UI)
 ```
 
-### 4. Start the frontend
+### 4. Iniciar el frontend
 
 ```bash
 cd frontend
@@ -182,145 +187,141 @@ npx ng serve
 # → http://localhost:4200
 ```
 
-> The SQLite database (`data/availability.db`) is included in the repository so no data pipeline run is needed to start the app.
+> La base de datos SQLite (`data/availability.db`) está incluida en el repositorio, por lo que no es necesario ejecutar el pipeline de datos para arrancar la app.
 
 ---
 
-## Environment Variables
+## Variables de entorno
 
-| Variable | Required | Description |
+| Variable | Requerida | Descripción |
 |---|---|---|
-| `GROQ_API_KEY` | Yes | Groq API key for LLM access. Free at [console.groq.com](https://console.groq.com) |
-| `ENV` | No | `development` or `production` (default: `development`) |
-| `DEBUG` | No | Enable debug logging (default: `true`) |
+| `GROQ_API_KEY` | Sí | Clave de API de Groq para el LLM. Gratuita en [console.groq.com](https://console.groq.com) |
+| `ENV` | No | `development` o `production` (por defecto: `development`) |
+| `DEBUG` | No | Activa logs detallados (por defecto: `true`) |
 
-The backend reads `.env` from the project root using `python-dotenv`. If `GROQ_API_KEY` is missing, the server raises an explicit error at startup:
+Si falta `GROQ_API_KEY`, el servidor muestra un error claro al iniciar:
 
 ```
-ValueError: ❌ GROQ_API_KEY not configured in .env
-   Get one free at: https://console.groq.com
+ValueError: ❌ GROQ_API_KEY no está configurada en .env
+   Obtén una gratis en: https://console.groq.com
 ```
 
 ---
 
-## How It Works
+## Cómo funciona
 
-### Data Pipeline (one-time, already done)
+### Pipeline de datos (proceso único, ya ejecutado)
 
 ```
-201 CSV files (Wide format)
+201 archivos CSV (formato wide)
     │  scripts/process_data.py
     ▼
-data/processed/availability_processed.csv   (67,141 rows)
+data/processed/availability_processed.csv   (67,141 filas)
     │  backend/init_db.py
     ▼
-data/availability.db   (SQLite, 3 indexes, <10ms queries)
+data/availability.db   (SQLite, 3 índices, consultas < 10ms)
 ```
 
-Each CSV contained ~10 minutes of measurements at 10-second granularity in wide format (columns = timestamps, rows = metric). The pipeline:
-1. Parses verbose timestamps: `"Fri Feb 06 2026 10:59:40 GMT-0500 (hora estándar de Colombia)"` → ISO 8601
-2. Transposes wide → long format
-3. Deduplicates overlapping time windows across files
-4. Normalizes to UTC and loads into SQLite
+Cada CSV contenía ~10 minutos de mediciones con granularidad de 10 segundos en formato wide (columnas = timestamps, filas = métrica). El pipeline:
+1. Parsea timestamps verbosos: `"Fri Feb 06 2026 10:59:40 GMT-0500 (hora estándar de Colombia)"` → ISO 8601
+2. Transpone de formato wide → long
+3. Elimina duplicados en ventanas de tiempo superpuestas entre archivos
+4. Normaliza a UTC y carga en SQLite
 
 ### API
 
 ```
 GET  /api/data
-     → Returns all 67,141 DataPoints + KPIs (min, max, avg, count)
-     → Optional: ?from_date=2026-02-05&to_date=2026-02-06
+     → Retorna los 67,141 DataPoints + KPIs (min, max, promedio, total)
+     → Opcional: ?from_date=2026-02-05&to_date=2026-02-06
 
 POST /api/chat
      Body: { "question": "¿A qué hora hay mayor disponibilidad?" }
-     → Runs RAG pipeline → returns grounded LLM response
+     → Ejecuta el pipeline RAG → retorna respuesta del LLM fundamentada en datos
 ```
-
-### Frontend routing
-
-Routes are lazy-loaded. The layout shell (sidebar + navbar) wraps all pages via Angular's nested routing.
 
 ---
 
-## AI Usage
+## Uso de IA (RAG)
 
-The chatbot uses **Retrieval-Augmented Generation (RAG)** rather than a direct LLM call:
+El chatbot usa **Retrieval-Augmented Generation (RAG)** en lugar de una llamada directa al LLM:
 
-**Why RAG?**
-- LLMs have no knowledge of this specific dataset
-- Direct prompting would produce hallucinated numbers
-- RAG grounds every answer in real SQL query results
+**¿Por qué RAG?**
+- Los LLMs no tienen conocimiento de este dataset específico
+- Una llamada directa produciría números inventados (alucinaciones)
+- RAG fundamenta cada respuesta en resultados reales de consultas SQL
 
-**Implementation (`backend/chatbot.py`):**
+**Implementación (`backend/chatbot.py`):**
 
 ```python
 def answer(self, question: str) -> str:
-    # 1. Query SQLite for relevant aggregates
-    summary = self._fetch_data_summary()       # global stats
-    context = self._fetch_relevant_data(question)  # keyword-matched queries
+    # 1. Consultar SQLite para obtener agregados relevantes
+    summary = self._fetch_data_summary()           # estadísticas globales
+    context = self._fetch_relevant_data(question)  # consultas por keywords
 
-    # 2. Inject real data into system prompt
-    system_prompt = f"You have access to: {summary}\n{context}\n..."
+    # 2. Inyectar datos reales en el system prompt
+    system_prompt = f"Tienes acceso a: {summary}\n{context}\n..."
 
-    # 3. Call Groq LLM with grounded context
+    # 3. Llamar al Groq LLM con contexto fundamentado
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=[{"role": "system", "content": system_prompt}, ...]
     )
 ```
 
-The LLM is instructed to only answer based on provided data and say "I don't have data for that" when out of scope.
+El LLM tiene instrucciones explícitas de responder solo con los datos proporcionados y decir "no tengo datos para eso" cuando la pregunta esté fuera de alcance.
 
 ---
 
-## Technical Decisions
+## Decisiones técnicas
 
-**FastAPI over Flask/Express** — async support, automatic OpenAPI docs, Pydantic validation with zero boilerplate.
+**FastAPI sobre Flask/Express** — soporte async nativo, documentación OpenAPI automática, validación Pydantic sin código extra.
 
-**Groq over OpenAI/Anthropic** — free tier with no credit card, ~300ms response time (10x faster than GPT-4), sufficient capability for structured data Q&A.
+**Groq sobre OpenAI/Anthropic** — tier gratuito sin tarjeta de crédito, ~300ms de respuesta (10x más rápido que GPT-4), capacidad suficiente para preguntas sobre datos estructurados.
 
-**SQLite over PostgreSQL** — self-contained, zero infrastructure setup, sub-10ms queries on 67K rows with proper indexing. A production version would use Postgres.
+**SQLite sobre PostgreSQL** — autocontenido, sin infraestructura, consultas sub-10ms sobre 67K filas con índices correctos. Una versión de producción usaría Postgres.
 
-**Angular over React** — strong typing with TypeScript, built-in dependency injection, OnPush change detection for performance, routing without extra libraries.
+**Angular sobre React** — tipado fuerte con TypeScript, inyección de dependencias nativa, OnPush change detection para rendimiento, routing sin librerías adicionales.
 
-**Chart.js over D3** — declarative API suitable for standard chart types; D3 is overkill for this use case and adds complexity without benefit.
+**Chart.js sobre D3** — API declarativa adecuada para los tipos de gráficos requeridos; D3 es sobredimensionado para este caso y añade complejidad sin beneficio.
 
-**Sampling for time series** — rendering all 67,141 points would freeze the browser. The frontend samples every Nth point to display ~500 points while preserving the visual pattern.
-
----
-
-## Future Improvements
-
-- [ ] Date range filter on dashboard
-- [ ] WebSocket for real-time data streaming
-- [ ] Persistent chat history (localStorage or DB)
-- [ ] Export charts as PNG/CSV
-- [ ] Authentication (JWT)
-- [ ] Docker Compose for one-command startup
-- [ ] Replace SQLite with PostgreSQL for production
-- [ ] Unit tests (pytest for backend, Jasmine for frontend)
-- [ ] CI/CD pipeline (GitHub Actions)
+**Muestreo en serie de tiempo** — renderizar los 67,141 puntos bloquearía el navegador. El frontend muestrea cada N puntos para mostrar ~500 preservando el patrón visual.
 
 ---
 
-## API Reference
+## Mejoras futuras
 
-Full interactive docs available at `http://localhost:8000/docs` when the backend is running.
+- [ ] Filtro por rango de fechas en el dashboard
+- [ ] WebSocket para streaming de datos en tiempo real
+- [ ] Historial de chat persistente (localStorage o BD)
+- [ ] Exportar gráficos como PNG/CSV
+- [ ] Autenticación con JWT
+- [ ] Docker Compose para arranque con un solo comando
+- [ ] Reemplazar SQLite con PostgreSQL para producción
+- [ ] Tests unitarios (pytest para backend, Jasmine para frontend)
+- [ ] Pipeline CI/CD con GitHub Actions
 
-| Method | Path | Description |
+---
+
+## Referencia de la API
+
+Documentación interactiva completa disponible en `http://localhost:8000/docs` cuando el backend está corriendo.
+
+| Método | Ruta | Descripción |
 |---|---|---|
-| `GET` | `/api/health` | Health check + record count |
-| `GET` | `/api/data` | Time-series data + KPIs |
-| `POST` | `/api/chat` | RAG chatbot endpoint |
+| `GET` | `/api/health` | Estado del servidor + conteo de registros |
+| `GET` | `/api/data` | Serie temporal + KPIs |
+| `POST` | `/api/chat` | Endpoint del chatbot RAG |
 
 ---
 
-## Data
+## Dataset
 
-- **Source:** 201 CSV files exported from Splunk/SignalFx synthetic monitoring
-- **Metric:** `synthetic_monitoring_visible_stores` — number of Rappi stores visible at each measurement
-- **Period:** February 1–11, 2026
-- **Granularity:** 10 seconds
-- **Range:** 0 to 6,198,472 stores
-- **Total records:** 67,141
+- **Fuente:** 201 archivos CSV exportados desde monitoreo sintético de Splunk/SignalFx
+- **Métrica:** `synthetic_monitoring_visible_stores` — número de tiendas Rappi visibles en cada medición
+- **Período:** 1 al 11 de Febrero de 2026
+- **Granularidad:** 10 segundos
+- **Rango de valores:** 0 a 6,198,472 tiendas
+- **Total de registros:** 67,141
 
-The raw CSVs and intermediate processed CSV are excluded from the repository (see `.gitignore`). The pre-built SQLite database is included so the app runs immediately after cloning.
+Los CSVs crudos y el CSV procesado intermedio están excluidos del repositorio (ver `.gitignore`). La base de datos SQLite pre-construida está incluida para que la app funcione inmediatamente después de clonar.
